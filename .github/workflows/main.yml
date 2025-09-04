@@ -15,14 +15,17 @@ jobs:
         working-directory: HealthApp-Backend
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
           cache: maven
+
+      # Runs unit/integration tests against Testcontainers Postgres
       - name: Build & Test
-        run: mvn -B -DskipTests=false verify
+        run: mvn -B verify
 
   frontend:
     name: Frontend (Next.js)
@@ -32,17 +35,23 @@ jobs:
         working-directory: healthapp-frontend
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          # lockfile path is from repo root; your frontend folder is 'healthapp-frontend'
+          cache-dependency-path: healthapp-frontend/package-lock.json
+
       - name: Install
         run: npm ci
+
       - name: Lint
         run: npm run lint --if-present
+
       - name: Test
         run: npm test --if-present -- --ci --watchAll=false
+
       - name: Build
         run: npm run build
