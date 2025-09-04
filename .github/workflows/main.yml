@@ -23,9 +23,22 @@ jobs:
           java-version: '21'
           cache: maven
 
-      # Runs unit/integration tests against Testcontainers Postgres
-      - name: Build & Test
+      # Run tests but disable DB/JPA auto-config
+      - name: Build & Test (DB-free)
+        env:
+          SPRING_AUTOCONFIGURE_EXCLUDE: >
+            org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,
+            org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+          SPRING_SQL_INIT_MODE: never
+          SPRING_JPA_HIBERNATE_DDL_AUTO: none
         run: mvn -B verify
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-surefire-reports
+          path: HealthApp-Backend/target/surefire-reports
 
   frontend:
     name: Frontend (Next.js)
@@ -41,7 +54,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          # lockfile path is from repo root; your frontend folder is 'healthapp-frontend'
           cache-dependency-path: healthapp-frontend/package-lock.json
 
       - name: Install
@@ -50,8 +62,22 @@ jobs:
       - name: Lint
         run: npm run lint --if-present
 
-      - name: Test
-        run: npm test --if-present -- --ci --watchAll=false
+      - name: Typecheck
+        run: npm run typecheck --if-present
+
+      - name: Unit tests
+        run: npm test --if-present -- --ci --reporters=default --reporters=jest-junit
 
       - name: Build
         run: npm run build
+
+      # Upload Jest JUnit results if present
+      - name: Upload frontend test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-reports
+          path: |
+            healthapp-frontend/junit.xml
+            healthapp-frontend/test-results/**/*.xml
+          if-no-files-found: ignore
