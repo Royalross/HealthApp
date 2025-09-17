@@ -28,13 +28,13 @@ public class AuthController {
     }
 
     /** Login: sets ACCESS_TOKEN and REFRESH_TOKEN cookies for a patient-context login. */
-    @PostMapping(value = "/loginPatient", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/loginpatient", consumes = "application/json", produces = "application/json")
     public ResponseEntity<AuthResponse> loginPatient(@Valid @RequestBody LoginRequest req) {
         return authService.login(req, Context.PATIENT);
     }
 	
 	/** Login: sets ACCESS_TOKEN and REFRESH_TOKEN cookies for a staff-context login. */
-    @PostMapping(value = "/loginStaff", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/loginstaff", consumes = "application/json", produces = "application/json")
     public ResponseEntity<AuthResponse> loginStaff(@Valid @RequestBody LoginRequest req) {
         return authService.login(req, Context.STAFF);
     }
