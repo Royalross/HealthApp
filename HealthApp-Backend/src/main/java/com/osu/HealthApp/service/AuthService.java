@@ -95,7 +95,7 @@ public class AuthService {
         String email = jws.getPayload().getSubject();
 		Context context = null;
 		try {
-			Context.valueOf(jws.getPayload().get("Context").toString());
+			Context.valueOf(jws.getPayload().get("context").toString());
 		} catch (IllegalArgumentException e) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
 		}
