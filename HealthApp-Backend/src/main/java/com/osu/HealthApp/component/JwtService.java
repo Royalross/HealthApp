@@ -51,7 +51,7 @@ public class JwtService {
     }
 
     /** Refresh token: subject=email, jti set by caller, longer TTL. */
-    public String generateRefreshToken(User u, String jti) {
+    public String generateRefreshToken(User u, Context context, String jti) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(u.getEmail())
@@ -60,6 +60,7 @@ public class JwtService {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(Duration.ofDays(refreshTtlDays))))
                 .claim("type", "refresh")
+				.claim("context", context.name())
                 .signWith(hmacKey)
                 .compact();
     }
