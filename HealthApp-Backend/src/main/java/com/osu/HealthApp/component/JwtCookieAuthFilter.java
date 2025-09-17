@@ -51,7 +51,7 @@ public class JwtCookieAuthFilter extends OncePerRequestFilter {
                     String email = jws.getPayload().getSubject();
 
                     UserDetails ud = uds.loadUserByUsername(email);
-					Collection<? extends GrantedAuthority> authorities = Stream.concat(ud.getAuthorities().stream(), Stream.of(new SimpleGrantedAuthority("CONTEXT_"+ jws.getPayload().get("Context")))).toList();
+					Collection<? extends GrantedAuthority> authorities = Stream.concat(ud.getAuthorities().stream(), Stream.of(new SimpleGrantedAuthority("CONTEXT_"+ jws.getPayload().get("context")))).toList();
                     var auth = new UsernamePasswordAuthenticationToken(ud, null, authorities);
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                     SecurityContextHolder.getContext().setAuthentication(auth);
